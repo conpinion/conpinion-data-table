@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>conpinion-data-table web component</title>
+  <script src='lib/webcomponentsjs/webcomponents-lite.min.js'></script>
+  <link rel="import" href="build/conpinion-data-table.html">
+</head>
+
+<body>
+
+  <h1>conpinion-data-table web component</h1>
+
+  <h2>A data table web component</h2>
+
+  <p>
+    <a href="test/index.html">Click here to run the tests...</a>
+  </p>
+
+  <p>
+    <a href="README.md">Click here to read the documentation...</a>
+  </p>
+
+  <p>
+    <a href="CHANGELOG.md">Click here to read the changelog...</a>
+  </p>
+
+  <h2>Demo</h2>
+
+  <template is="dom-bind" id="template">
+
+    <conpinion-data-table id="table" resource="{{users}}" on-conpinion-data-table-edit="editItem">
+      <conpinion-data-table-column name="email" label="Email"></conpinion-data-table-column>
+      <conpinion-data-table-column name="name" label="Name"></conpinion-data-table-column>
+      <conpinion-data-table-column name="role" label="Role"></conpinion-data-table-column>
+    </conpinion-data-table>
+
+  </template>
+
+  <script>
+    data = [
+      {href: 0, email: 'alice@example.com', name: 'Alice', role: 'Manager'},
+      {href: 1, email: 'bob@example.com', name: 'Bob', role: 'Administrator'},
+      {href: 2, email: 'carol@example.com', name: 'Carol', role: 'Developer'}
+    ];
+    var t = document.querySelector('#template');
+    t.users = {
+      index: function() {
+        return new Promise(function(resolve, reject) {
+          setTimeout(function() { resolve({data: data, status: 200}); }, 3000);
+        });
+      },
+      destroy: function(item) {
+        data.splice(item.id, 1);
+        return Promise.resolve();
+      }
+    };
+    t.editItem = function(e) {
+      alert("Edit: " + e.detail.href);
+    };
+    document.addEventListener('WebComponentsReady', function() {
+      document.querySelector('#table').load();
+    })
+  </script>
+
+  <script src="//localhost:35729/livereload.js"></script>
+
+</body>
+
+</html>

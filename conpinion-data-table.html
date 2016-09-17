@@ -1,0 +1,198 @@
+
+<!--
+Copyright (c) 2015 TELCAT MULTICOM GmbH. All rights reserved.
+Copyright (c) 2016 conpinion GbR. All rights reserved.
+
+Element: conpinion-data-table
+Version: 0.1.9
+Description: A data table component
+-->
+
+
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../paper-spinner/paper-spinner.html">
+<link rel="import" href="../grapp-dialogs/grapp-confirmation-dialog.html">
+<link rel="import" href="../grapp-i18n-js/grapp-i18n-js.html">
+
+<dom-module id="conpinion-data-table-column">
+
+  <template></template>
+
+<script type="text/javascript">(function() {
+  var id;
+
+  id = 1;
+
+  Polymer({
+    is: 'conpinion-data-table-column',
+    properties: {
+      name: {
+        type: String,
+        value: "" + (id++)
+      },
+      label: {
+        type: String,
+        value: ''
+      }
+    }
+  });
+
+}).call(this);
+</script>
+
+</dom-module>
+
+
+<dom-module id="conpinion-data-table">
+
+  <template>
+
+    <link rel="stylesheet" href="../semantic-ui/dist/components/table.css">
+    <link rel="stylesheet" href="../semantic-ui/dist/components/reset.css">
+
+<style>paper-shadow {
+  margin: 16px;
+  padding: 16px;
+  background-color: white;
+}
+.ui.table {
+  margin: 0;
+}
+</style>
+
+    <grapp-confirmation-dialog id="deleteConfirmation" heading="Please confirm deletion" html-message
+                               yes-label="Delete" yes-icon="delete"
+                               no-abel="Cancel" no-icon="close"></grapp-confirmation-dialog>
+
+    <div horizontal center-justified layout hidden$="[[!heading]]">
+      <h1>[[heading]]</h1>
+    </div>
+
+    <table class="ui table compact">
+      <thead>
+        <tr>
+          <template is="dom-repeat" items="[[columns]]" as="column">
+            <th>[[_columnTitle(column.name, column.label, model)]]</th>
+          </template>
+          <th>Aktionen</th>
+        </tr>
+      </thead>
+      <tbody>
+        <template is="dom-repeat" items="[[data]]">
+          <tr id="[[item.id]]">
+            <template is="dom-repeat" items="[[columns]]" as="column">
+              <td>
+                <span>[[_getAttribute(item, column.name)]]</span>
+              </td>
+            </template>
+            <td class="collapsing right aligned">
+              <paper-icon-button icon="create" on-click="editResource"></paper-icon-button>
+              <paper-icon-button icon="delete" on-click="deleteResource"></paper-icon-button>
+            </td>
+          </tr>
+        </template>
+        <tr hidden$="[[!loading]]">
+          <td colspan$="[[_totalColumnsCount(columns)]]"><paper-spinner active></paper-spinner></td>
+        </tr>
+      </tbody>
+    </table>
+
+  </template>
+
+<script type="text/javascript">(function() {
+  Polymer({
+    is: 'conpinion-data-table',
+    behaviors: [Grapp.I18NJsBehavior],
+    properties: {
+      resource: {
+        type: Object
+      },
+      model: {
+        type: String,
+        value: 'model'
+      },
+      heading: {
+        type: String
+      },
+      titleAttribute: {
+        type: String,
+        value: 'href'
+      }
+    },
+    attached: function() {
+      var column, columnNodes;
+      this.data = [];
+      this.loading = false;
+      columnNodes = Polymer.dom(this).querySelectorAll('conpinion-data-table-column');
+      return this.columns = (function() {
+        var i, len, results;
+        results = [];
+        for (i = 0, len = columnNodes.length; i < len; i++) {
+          column = columnNodes[i];
+          results.push(column);
+        }
+        return results;
+      })();
+    },
+    load: function() {
+      var delayedLoadingSpinner;
+      delayedLoadingSpinner = setInterval(((function(_this) {
+        return function() {
+          return _this.loading = true;
+        };
+      })(this)), 1000);
+      return this.resource.index().then((function(_this) {
+        return function(success) {
+          _this.data = success.data;
+          clearTimeout(delayedLoadingSpinner);
+          return _this.loading = false;
+        };
+      })(this), (function(_this) {
+        return function(error) {
+          return _this.fire('conpinion-data-table-error', error.data);
+        };
+      })(this));
+    },
+    editResource: function(e) {
+      return this.fire('conpinion-data-table-edit', {
+        href: e.model.item.href
+      });
+    },
+    deleteResource: function(e) {
+      var item, message, modelName;
+      item = e.model.item;
+      modelName = "models." + this.model + ".one";
+      message = "Soll " + (this.i18n(modelName)) + " <b>" + (this._getAttribute(item, this.titleAttribute)) + "</b> wirklich gelöscht werden?";
+      return this.$.deleteConfirmation.ask(message).then((function(_this) {
+        return function() {
+          return _this.resource.destroy(item.href).then(function(success) {
+            return _this.data = _this.data.filter(function(it) {
+              return it.href !== item.href;
+            });
+          }, function(error) {
+            return _this.fire('conpinion-data-table-error', error.data);
+          });
+        };
+      })(this), function() {});
+    },
+    _getAttribute: function(item, column) {
+      return column.split('.').reduce((function(o, x) {
+        return o[x];
+      }), item);
+    },
+    _totalColumnsCount: function(columns) {
+      return columns.length + 1;
+    },
+    _columnTitle: function(name, label, model) {
+      if (label) {
+        return label;
+      } else {
+        return this.i18n("attributes." + model + "." + name);
+      }
+    }
+  });
+
+}).call(this);
+</script>
+
+</dom-module>

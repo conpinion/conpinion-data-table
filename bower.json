@@ -1,0 +1,46 @@
+{
+  "name": "conpinion-data-table",
+  "description": "A data table component",
+  "version": "0.1.9",
+  "main": "conpinion-data-table.html",
+  "license": "MIT",
+  "ignore": [
+    "bin",
+    "build",
+    "lib",
+    "node_modules",
+    "src",
+    "test",
+    "tmpl",
+    "package.json",
+    "**/.*",
+    "**/*.log",
+    "**/*.sublime-*",
+    "atlassian-ide-plugin.xml"
+  ],
+  "keywords": [
+    "web-components"
+  ],
+  "authors": [
+    "Dirk Grappendorf <dirk.grappendorf@conpinion.de>",
+    "Tim Völpel <tim.voelpel@conpinion.de>"
+  ],
+  "homepage": "https://github.com/conpinion/conpinion-data-table",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/conpinion/conpinion-data-table.git"
+  },
+  "dependencies": {
+    "paper-icon-button": "PolymerElements/paper-icon-button#^1.0.2",
+    "paper-spinner": "PolymerElements/paper-spinner#^1.0.1",
+    "grapp-dialogs": "^0.1.1",
+    "grapp-i18n-js": "^0.3.0",
+    "semantic-ui": "^1.11.5"
+  },
+  "devDependencies": {
+    "coffee-script": "^1.10.0",
+    "jquery": "^2.1.4",
+    "web-component-tester": "Polymer/web-component-tester#^3.3.21",
+    "test-fixture": "PolymerElements/test-fixture#^1.0.0"
+  }
+}

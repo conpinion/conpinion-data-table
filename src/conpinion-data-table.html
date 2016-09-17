@@ -1,0 +1,80 @@
+<!-- build:process -->
+<!--
+<%= copyright %>
+Element: <%= pkg.name %>
+Version: <%= pkg.version %>
+Description: <%= pkg.description %>
+-->
+<!-- /build -->
+
+<link rel="import" href="../lib/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../lib/paper-spinner/paper-spinner.html">
+<link rel="import" href="../lib/grapp-dialogs/grapp-confirmation-dialog.html">
+<link rel="import" href="../lib/grapp-i18n-js/grapp-i18n-js.html">
+
+<dom-module id="conpinion-data-table-column">
+
+  <template></template>
+
+  <!-- build:script inline conpinion-data-table-column -->
+  <script src="conpinion-data-table-column.js"></script>
+  <!-- /build -->
+
+</dom-module>
+
+
+<dom-module id="conpinion-data-table">
+
+  <template>
+
+    <link rel="stylesheet" href="../lib/semantic-ui/dist/components/table.css">
+    <link rel="stylesheet" href="../lib/semantic-ui/dist/components/reset.css">
+
+    <!-- build:style inline conpinion-data-table -->
+    <link href="conpinion-data-table.css" rel="stylesheet">
+    <!-- /build -->
+
+    <grapp-confirmation-dialog id="deleteConfirmation" heading="Please confirm deletion" html-message
+                               yes-label="Delete" yes-icon="delete"
+                               no-abel="Cancel" no-icon="close"></grapp-confirmation-dialog>
+
+    <div horizontal center-justified layout hidden$="[[!heading]]">
+      <h1>[[heading]]</h1>
+    </div>
+
+    <table class="ui table compact">
+      <thead>
+        <tr>
+          <template is="dom-repeat" items="[[columns]]" as="column">
+            <th>[[_columnTitle(column.name, column.label, model)]]</th>
+          </template>
+          <th>Aktionen</th>
+        </tr>
+      </thead>
+      <tbody>
+        <template is="dom-repeat" items="[[data]]">
+          <tr id="[[item.id]]">
+            <template is="dom-repeat" items="[[columns]]" as="column">
+              <td>
+                <span>[[_getAttribute(item, column.name)]]</span>
+              </td>
+            </template>
+            <td class="collapsing right aligned">
+              <paper-icon-button icon="create" on-click="editResource"></paper-icon-button>
+              <paper-icon-button icon="delete" on-click="deleteResource"></paper-icon-button>
+            </td>
+          </tr>
+        </template>
+        <tr hidden$="[[!loading]]">
+          <td colspan$="[[_totalColumnsCount(columns)]]"><paper-spinner active></paper-spinner></td>
+        </tr>
+      </tbody>
+    </table>
+
+  </template>
+
+  <!-- build:script inline conpinion-data-table -->
+  <script src="conpinion-data-table.js"></script>
+  <!-- /build -->
+
+</dom-module>
